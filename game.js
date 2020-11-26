@@ -6,6 +6,7 @@ let isMovingLeft = false;
 let bg_elements = 0;
 let lastJumpStarted = 0;
 let character_energy = 100;
+let finalBossEnergy = 100;
 let character_y = 250;
 let currentCharacterImage = 'img/charakter_1.png';
 let characterGraphicsRight = ['img/charakter_1.png', 'img/charakter_2.png', 'img/charakter_3.png', 'img/charakter_4.png'];
@@ -16,13 +17,22 @@ let chickens = [];
 let placedBottles = [1000, 1400, 1700, 2300, 2500, 2900, 3300, 3900];
 let colectedBottles = 10;
 let bottleThrowTime = 0;
+let trownBottleX = 0;
+let trownBottleY = 0;
 
 // ******************* Game config ****************** \\
 let JUMP_TIME = 250; //in ms 
 let GAME_SPEED = 5;
 let AUDIO_RUNNING = new Audio('audio/running.mp3');
 let AUDIO_JUMP = new Audio('audio/jump.mp3');
-let AUDIO_BOTTLE = new Audio('audio/bottle.mp3')
+let AUDIO_BOTTLE = new Audio('audio/bottle.mp3');
+let AUDIO_THROW = new Audio('audio/throw.mp3');
+let AUDIO_CHICKEN = new Audio('audio/chicken.mp3');
+let AUDIO_GLASS = new Audio('audio/glass.mp3');
+let AUDIO_BGM = new Audio('audio/el_pollo_loco.mp3');
+AUDIO_BGM.loop = true;
+AUDIO_BGM.volume = 0.2;
+
 
 function init() {
 
@@ -35,6 +45,7 @@ function init() {
     listenForKeys();
     calculateChickenPosition();
     checkForCollision();
+ 
 
 }
 
@@ -45,12 +56,10 @@ function checkForCollision() {
             let chicken = chickens[i];
             let chicken_x = chicken.position_x + bg_elements;
             if ((chicken_x - 40) < character_x && (chicken_x + 40) > character_x) {
-                if (character_y > 210) {
+                if (character_y > 210 && character_energy != 0) {
                     character_energy -= 5;
                 }
-                if (character_energy < 5) {
-                    character_energy = 0;
-                }
+                
 
             }
         }
@@ -65,6 +74,15 @@ function checkForCollision() {
                 }
             }
         }
+
+        //// Check Final boss
+if(trownBottleX > 500 + bg_elements -100 &&  trownBottleX < 500 + bg_elements + 100 ){
+    if (finalBossEnergy != 0){
+        finalBossEnergy -= 20;
+        AUDIO_GLASS.play();
+    }
+    
+}
     }, 200);
 }
 
@@ -139,21 +157,30 @@ function draw() {
 }
 
 function drawFinalBoss() {
-    let chicken_x = 5000;
+    let chicken_x = 500;
     addBackgroundObject('img/chicken_big.png', chicken_x, 98, 0.45, 1);
+
+    ctx.globalAlpha = 0.5;
+    ctx.fillStyle = "red";
+    ctx.fillRect(500 + bg_elements, 80, 2 * finalBossEnergy, 10);
+
+    ctx.globalAlpha = 0.2;
+    ctx.fillStyle = "blue";
+    ctx.fillRect(495 + bg_elements, 75, 210, 20);
+    ctx.globalAlpha = 1;
 }
 
 function drawThrowBottle() {
     if (bottleThrowTime) {
         let timePassed = new Date().getTime() - bottleThrowTime;
         let gravity = Math.pow(9.81, timePassed / 289)
-        let bottle_x = 220 + (timePassed * 0.9);
-        let bottle_y = 300 - (timePassed * 0.4 - gravity);
+        trownBottleX = 220 + (timePassed * 0.9);
+        trownBottleY = 300 - (timePassed * 0.4 - gravity);
 
         let base_image = new Image();
         base_image.src = 'img/tabasco.png';
         if (base_image.complete) {
-            ctx.drawImage(base_image, bottle_x, bottle_y, base_image.width * 0.5, base_image.height * 0.5);
+            ctx.drawImage(base_image, trownBottleX, trownBottleY, base_image.width * 0.5, base_image.height * 0.5);
         };
     }
 
@@ -313,6 +340,7 @@ function listenForKeys() {
         if (k == 'd') {
             let timePassed = new Date().getTime() - bottleThrowTime;
             if (timePassed > 1000) {
+                AUDIO_THROW.play();
                 colectedBottles--;
                 bottleThrowTime = new Date().getTime();
             }
