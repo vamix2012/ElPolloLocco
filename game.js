@@ -19,10 +19,12 @@ let colectedBottles = 10;
 let bottleThrowTime = 0;
 let trownBottleX = 0;
 let trownBottleY = 0;
+let bossDefeatedAt = 0;
 
 // ******************* Game config ****************** \\
 let JUMP_TIME = 250; //in ms 
 let GAME_SPEED = 5;
+let BOSS_POSITION = 1500;
 let AUDIO_RUNNING = new Audio('audio/running.mp3');
 let AUDIO_JUMP = new Audio('audio/jump.mp3');
 let AUDIO_BOTTLE = new Audio('audio/bottle.mp3');
@@ -45,7 +47,7 @@ function init() {
     listenForKeys();
     calculateChickenPosition();
     checkForCollision();
- 
+
 
 }
 
@@ -59,7 +61,7 @@ function checkForCollision() {
                 if (character_y > 210 && character_energy != 0) {
                     character_energy -= 5;
                 }
-                
+
 
             }
         }
@@ -76,13 +78,15 @@ function checkForCollision() {
         }
 
         //// Check Final boss
-if(trownBottleX > 500 + bg_elements -100 &&  trownBottleX < 500 + bg_elements + 100 ){
-    if (finalBossEnergy != 0){
-        finalBossEnergy -= 20;
-        AUDIO_GLASS.play();
-    }
-    
-}
+        if (trownBottleX > BOSS_POSITION + bg_elements - 100 && trownBottleX < BOSS_POSITION + bg_elements + 100) {
+            if (finalBossEnergy != 0) {
+                finalBossEnergy -= 20;
+                AUDIO_GLASS.play();
+            } else {
+                bossDefeatedAt = new Date().getTime();
+            }
+
+        }
     }, 200);
 }
 
@@ -119,6 +123,7 @@ function calculateCloudOffset() {
 }
 
 function checkForRunning() {
+
     setInterval(function () {
         if (isMovingRight) {
             AUDIO_RUNNING.play();
@@ -157,16 +162,31 @@ function draw() {
 }
 
 function drawFinalBoss() {
-    let chicken_x = 500;
-    addBackgroundObject('img/chicken_big.png', chicken_x, 98, 0.45, 1);
+    let chicken_x = BOSS_POSITION;
+    let bossIamge = 'img/chicken_big.png';
+    let chicken_y = 98;
+    let energyBarX = BOSS_POSITION - 5 ;
+    let energyBarY = 75;
+
+    if (bossDefeatedAt > 0) {
+        let timePassed = new Date().getTime() - bossDefeatedAt;
+        chicken_x = chicken_x + timePassed * 0.7;
+        chicken_y = chicken_y - timePassed * 0.3;
+        energyBarX = energyBarX + timePassed * 0.7;
+        energyBarY = energyBarY - timePassed * 0.3;
+        bossIamge = 'img/chicken_dead.png';
+
+    }
+
+    addBackgroundObject(bossIamge, chicken_x, chicken_y, 0.45, 1);
 
     ctx.globalAlpha = 0.5;
     ctx.fillStyle = "red";
-    ctx.fillRect(500 + bg_elements, 80, 2 * finalBossEnergy, 10);
+    ctx.fillRect(BOSS_POSITION + bg_elements, 80, 2 * finalBossEnergy, 10);
 
     ctx.globalAlpha = 0.2;
     ctx.fillStyle = "blue";
-    ctx.fillRect(495 + bg_elements, 75, 210, 20);
+    ctx.fillRect(energyBarX + bg_elements, energyBarY, 210, 20);
     ctx.globalAlpha = 1;
 }
 
