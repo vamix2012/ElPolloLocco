@@ -1,16 +1,20 @@
 let canvas;
 let ctx;
-let character_x = 200;
+let character_x = 100;
 let isMovingRight = false;
 let isMovingLeft = false;
 let bg_elements = 0;
 let lastJumpStarted = 0;
 let character_energy = 100;
 let finalBossEnergy = 100;
-let character_y = 250;
-let currentCharacterImage = 'img/charakter_1.png';
-let characterGraphicsRight = ['img/charakter_1.png', 'img/charakter_2.png', 'img/charakter_3.png', 'img/charakter_4.png'];
-let characterGraphicsLeft = ['img/charakter_left_1.png', 'img/charakter_left_2.png', 'img/charakter_left_3.png', 'img/charakter_left_4.png'];
+let character_y = 150;
+let imagePathsWalk = ['img/run/W-21.png', 'img/run/W-22.png', 'img/run/W-23.png', 'img/run/W-24.png', 'img/run/W-25.png', 'img/run/W-26.png'];
+let imagePathsIdle = ['img/idle/I-1.png', 'img/idle/I-2.png', 'img/idle/I-3.png', 'img/idle/I-4.png', 'img/idle/I-5.png', 'img/idle/I-6.png', 'img/idle/I-7.png', 'img/idle/I-8.png', 'img/idle/I-9.png']
+let currentCharacterImage = '';
+let imagesWalk = [];
+let imagesIdle = [];
+// let characterGraphicsRight = ['img/run/W-21.png', 'img/run/W-22.png', 'img/run/W-23.png', 'img/run/W-24.png', 'img/run/W-25.png', 'img/run/W-26.png'];
+// let characterGraphicsIdle = ['img/idle/I-1.png', 'img/idle/I-2.png', 'img/idle/I-3.png', 'img/idle/I-4.png', 'img/idle/I-5.png', 'img/idle/I-6.png', 'img/idle/I-7.png', 'img/idle/I-8.png', 'img/idle/I-9.png']
 let characterGraphicsIndex = 0;
 let cloudOffset = 0;
 let chickens = [];
@@ -24,9 +28,9 @@ let game_finished = false;
 let characterLostAt = 0;
 
 // ******************* Game config ****************** \\
-let JUMP_TIME = 250; //in ms 
+let JUMP_TIME = 300; //in ms 
 let GAME_SPEED = 5;
-let BOSS_POSITION = 500;
+let BOSS_POSITION = 5000;
 let AUDIO_RUNNING = new Audio('audio/running.mp3');
 let AUDIO_JUMP = new Audio('audio/jump.mp3');
 let AUDIO_BOTTLE = new Audio('audio/bottle.mp3');
@@ -40,7 +44,9 @@ AUDIO_BGM.volume = 0.2;
 
 
 function init() {
-
+    loadInitialImage();
+    preloadImages(imagePathsIdle, imagesIdle);
+    preloadImages(imagePathsWalk, imagesWalk);
     canvas = document.getElementById('canvas');
     ctx = canvas.getContext('2d');
     createChickenList();
@@ -54,6 +60,21 @@ function init() {
 
 }
 
+function loadInitialImage() {
+base_image = new Image();
+base_image.src = imagePathsIdle[0];
+currentCharacterImage = base_image;
+}
+
+function preloadImages(path, newArray) {
+
+    for (let i = 0; i < path.length; i++) {
+        let image = new Image();
+        image.src = path[i];
+        newArray.push(image);
+    }
+}
+
 function checkForCollision() {
     setInterval(function () {
         //Check chicken
@@ -61,14 +82,14 @@ function checkForCollision() {
             let chicken = chickens[i];
             let chicken_x = chicken.position_x + bg_elements;
             if ((chicken_x - 40) < character_x && (chicken_x + 40) > character_x) {
-                if (character_y > 210 && character_energy != 0) {
+                if (character_y > 110 && character_energy != 0) {
                     character_energy -= 5;
-                } 
-                
-             if(character_energy == 0) {
-                  characterLostAt = new Date().getTime();
-                  game_finished = true;
-               }
+                }
+
+                if (character_energy == 0) {
+                    characterLostAt = new Date().getTime();
+                    game_finished = true;
+                }
 
 
             }
@@ -77,7 +98,7 @@ function checkForCollision() {
         for (let i = 0; i < placedBottles.length; i++) {
             let bottle_x = placedBottles[i] + bg_elements;
             if ((bottle_x - 40) < character_x && (bottle_x + 40) > character_x) {
-                if (character_y > 210) {
+                if (character_y > 110) {
                     AUDIO_BOTTLE.play();
                     placedBottles.splice(i, 1);
                     colectedBottles++;
@@ -146,22 +167,25 @@ function checkForRunning() {
     setInterval(function () {
         if (isMovingRight) {
             AUDIO_RUNNING.play();
-            let index = characterGraphicsIndex % characterGraphicsRight.length;
-            currentCharacterImage = characterGraphicsRight[index];
+            let index = characterGraphicsIndex % imagesWalk.length;
+            currentCharacterImage = imagesWalk[index];
             characterGraphicsIndex++;
         }
 
         if (isMovingLeft) {
             AUDIO_RUNNING.play();
-            let index = characterGraphicsIndex % characterGraphicsLeft.length;
-            currentCharacterImage = characterGraphicsLeft[index];
+            let index = characterGraphicsIndex % imagesWalk.length;
+            currentCharacterImage = imagesWalk[index];
             characterGraphicsIndex++;
         }
 
         if (!isMovingLeft && !isMovingRight) {
+            let index = characterGraphicsIndex % imagesIdle.length;
+            currentCharacterImage = imagesIdle[index];
+            characterGraphicsIndex++;
             AUDIO_RUNNING.pause();
         }
-    }, 100);
+    }, 300);
 
 
 }
@@ -186,9 +210,9 @@ function draw() {
 }
 
 function drawfinalScreen() {
-    ctx.font = '80px Comic Sans MS';
+    ctx.font = '80px Boogaloo-Regular';
     let msg = 'You Won!'
-    if (characterLostAt > 0){
+    if (characterLostAt > 0) {
         msg = 'You Lost!'
     }
     ctx.fillText(msg, 220, 180)
@@ -292,19 +316,30 @@ function createChicken(type, position_x) {
 }
 
 function updateCharacter() {
-    let base_image = new Image();
-    base_image.src = currentCharacterImage;
+
+    let base_image = currentCharacterImage;
 
     let timePassedSinceJump = new Date().getTime() - lastJumpStarted;
     if (timePassedSinceJump < JUMP_TIME) {
         character_y = character_y - 10;
     } else {
-        if (character_y < 250) {
+        if (character_y < 150) {
             character_y = character_y + 10;
         }
     }
     if (base_image.complete) {
-        ctx.drawImage(base_image, character_x, character_y, base_image.width * 0.35, base_image.height * 0.35);
+        if (isMovingLeft) {
+            ctx.scale(-1, 1);
+            ctx.drawImage(base_image, -character_x - 90, character_y, base_image.width * 0.2, base_image.height * 0.2);
+            ctx.scale(-1, 1);
+        }
+        if (isMovingRight) {
+            ctx.drawImage(base_image, character_x, character_y, base_image.width * 0.2, base_image.height * 0.2);
+        }
+        if (!isMovingRight && !isMovingLeft) {
+            ctx.drawImage(base_image, character_x, character_y, base_image.width * 0.2, base_image.height * 0.2);
+        }
+
     }
 }
 
