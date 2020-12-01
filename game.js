@@ -8,6 +8,8 @@ let isLookingLeft = false;
 let isFalling = false;
 let isJumping = false;
 let bg_elements = 0;
+let bg_elements2 = 0;
+let bg_elements3 = 0;
 let lastJumpStarted = 0;
 let character_energy = 10;
 let finalBossEnergy = 100;
@@ -241,8 +243,8 @@ function drawfinalScreen() {
 function drawFinalBoss() {
     let chicken_x = BOSS_POSITION;
     let bossIamge = 'img/chicken_big.png';
-    let chicken_y = 98;
-    let energyBarX = BOSS_POSITION - 5;
+    let chicken_y = 90;
+    let energyBarX = BOSS_POSITION + 15;
     let energyBarY = 75;
 
     if (bossDefeatedAt > 0) {
@@ -255,11 +257,11 @@ function drawFinalBoss() {
 
     }
 
-    addBackgroundObject(bossIamge, chicken_x, chicken_y, 0.45, 1);
+    addBackgroundObject(bossIamge, chicken_x, chicken_y, 0.30, 1, bg_elements);
 
     ctx.globalAlpha = 0.5;
     ctx.fillStyle = "red";
-    ctx.fillRect(BOSS_POSITION + bg_elements, 80, 2 * finalBossEnergy, 10);
+    ctx.fillRect(BOSS_POSITION + bg_elements + 20, 80, 2 * finalBossEnergy, 10);
 
     ctx.globalAlpha = 0.2;
     ctx.fillStyle = "blue";
@@ -299,7 +301,7 @@ function drawInformation() {
 function drawBottles() {
     for (let i = 0; i < placedBottles.length; i++) {
         let bottle_x = placedBottles[i];
-        addBackgroundObject('img/tabasco.png', bottle_x, 353, 0.47, 1);
+        addBackgroundObject('img/tabasco.png', bottle_x, 353, 0.47, 1, bg_elements);
     }
 }
 
@@ -320,7 +322,7 @@ function drawChicken() {
 
     for (i = 0; i < chickens.length; i = i + 1) {
         let chicken = chickens[i];
-        addBackgroundObject(chicken.img, chicken.position_x, chicken.position_y, chicken.scale, 1);
+        addBackgroundObject(chicken.img, chicken.position_x, chicken.position_y, chicken.scale, 1, bg_elements);
     }
 
 }
@@ -383,12 +385,12 @@ function drawBackground() {
 
     ctx.fillStyle = "white";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-   
+
     drawGround();
 
     for (let i = 0; i < cloudType.length; i++) {
-       num = cloudType[i]; 
-        addBackgroundObject('img/cloud'+ num +'.png', (i * canvas.width) - cloudOffset, 20, 0.4, 1);
+        num = cloudType[i];
+        addBackgroundObject('img/cloud' + num + '.png', (i * canvas.width) - cloudOffset, 20, 0.4, 1, bg_elements3);
     }
 
 }
@@ -397,33 +399,39 @@ function drawGround() {
 
     if (isMovingRight) {
         bg_elements = bg_elements - GAME_SPEED;
+        bg_elements2 = bg_elements2 - (GAME_SPEED - 3);
+        bg_elements3 = bg_elements3 - (GAME_SPEED - 4);
     }
 
     if (isMovingLeft && bg_elements < 0) {
         bg_elements = bg_elements + GAME_SPEED;
-    }
- for (let i = 0; i < 10; i++) {
-
-        addBackgroundObject('img/bg/2.png', i * canvas.width, 75, 0.375, 1);
-        addBackgroundObject('img/bg/3.png', (i + 1) * canvas.width, 75, 0.375, 1);
-
+        bg_elements2 = bg_elements2 + (GAME_SPEED - 3);
+        bg_elements3 = bg_elements3 + (GAME_SPEED - 4);
     }
     for (let i = 0; i < 10; i++) {
 
-        addBackgroundObject('img/bg/0.png', i * canvas.width, 75, 0.375, 1);
-        addBackgroundObject('img/bg/1.png', (i + 1) * canvas.width, 75, 0.375, 1);
+        addBackgroundObject('img/bg/2.png', i * canvas.width, 75, 0.375, 1, bg_elements3);
+        addBackgroundObject('img/bg/3.png', (i + 1) * canvas.width, 75, 0.375, 1, bg_elements3);
 
     }
-   
+    for (let i = 0; i < 10; i++) {
+        addBackgroundObject('img/bg/0.png', i * canvas.width, 75, 0.375, 1, bg_elements2);
+        addBackgroundObject('img/bg/1.png', (i + 1) * canvas.width, 75, 0.375, 1, bg_elements2);
+    }
+
+
+
+
+
     //draw Ground
     for (let i = 0; i < 10; i++) {
-        addBackgroundObject('img/bg/4.png', i * canvas.width, 75, 0.375, 1);
-        addBackgroundObject('img/bg/5.png', (i + 1) * canvas.width, 75, 0.375, 1);
+        addBackgroundObject('img/bg/4.png', i * canvas.width, 75, 0.375, 1, bg_elements);
+        addBackgroundObject('img/bg/5.png', (i + 1) * canvas.width, 75, 0.375, 1, bg_elements);
     }
-
 }
 
-function addBackgroundObject(src, offsetY, offsetX, scale, opacity) {
+
+function addBackgroundObject(src, offsetY, offsetX, scale, opacity, bg_elements) {
     if (opacity != undefined) {
         ctx.globalAlpha = opacity;
     }
