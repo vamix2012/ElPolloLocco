@@ -5,7 +5,6 @@ let isMovingRight = false;
 let isMovingLeft = false;
 let isLookingRight = true;
 let isLookingLeft = false;
-let isFalling = false;
 let isJumping = false;
 let bg_elements = 0;
 let bg_elements2 = 0;
@@ -16,7 +15,7 @@ let finalBossEnergy = 100;
 let character_y = 190;
 let imagePathsWalk = ['img/run/W-21.png', 'img/run/W-22.png', 'img/run/W-23.png', 'img/run/W-24.png', 'img/run/W-25.png', 'img/run/W-26.png'];
 let imagePathsIdle = ['img/idle/I-1.png', 'img/idle/I-2.png', 'img/idle/I-3.png', 'img/idle/I-4.png', 'img/idle/I-5.png', 'img/idle/I-6.png', 'img/idle/I-7.png', 'img/idle/I-8.png', 'img/idle/I-9.png'];
-let imagePathsJump = ['img/jump/J-31.png', 'img/jump/J-32.png', 'img/jump/J-33.png', 'img/jump/J-34.png', 'img/jump/J-35.png', 'img/jump/J-36.png', 'img/jump/J-37.png', 'img/jump/J-38.png', 'img/jump/J-39.png'];
+let imagePathsJump = ['img/jump/J-31.png', 'img/jump/J-33.png', 'img/jump/J-35.png', 'img/jump/J-39.png'];
 let currentCharacterImage = '';
 let imagesJump = [];
 let imagesWalk = [];
@@ -37,7 +36,7 @@ let introLoading = false;
 
 // ******************* Game config ****************** \\
 let JUMP_TIME = 300; //in ms 
-let GAME_SPEED = 5;
+let GAME_SPEED = 7;
 let BOSS_POSITION = 5000;
 let AUDIO_RUNNING = new Audio('audio/running.mp3');
 let AUDIO_JUMP = new Audio('audio/jump.mp3');
@@ -188,7 +187,7 @@ function checkForRunning() {
             characterGraphicsIndex++;
         }
 
-        if (!isMovingLeft && !isMovingRight && !isJumping && !isFalling) {
+        if (!isMovingLeft && !isMovingRight && !isJumping) {
             let index = characterGraphicsIndex % imagesIdle.length;
             currentCharacterImage = imagesIdle[index];
             characterGraphicsIndex++;
