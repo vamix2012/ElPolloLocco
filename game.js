@@ -6,6 +6,7 @@ let isMovingLeft = false;
 let isLookingRight = true;
 let isLookingLeft = false;
 let isJumping = false;
+let isColiding = false;
 let bg_elements = 0;
 let bg_elements2 = 0;
 let bg_elements3 = 0;
@@ -13,13 +14,7 @@ let lastJumpStarted = 0;
 let character_energy = 10;
 let finalBossEnergy = 100;
 let character_y = 190;
-let imagePathsWalk = ['img/run/W-21.png', 'img/run/W-22.png', 'img/run/W-23.png', 'img/run/W-24.png', 'img/run/W-25.png', 'img/run/W-26.png'];
-let imagePathsIdle = ['img/idle/I-1.png', 'img/idle/I-2.png', 'img/idle/I-3.png', 'img/idle/I-4.png', 'img/idle/I-5.png', 'img/idle/I-6.png', 'img/idle/I-7.png', 'img/idle/I-8.png', 'img/idle/I-9.png'];
-let imagePathsJump = ['img/jump/J-31.png', 'img/jump/J-33.png', 'img/jump/J-35.png', 'img/jump/J-39.png'];
 let currentCharacterImage = '';
-let imagesJump = [];
-let imagesWalk = [];
-let imagesIdle = [];
 let characterGraphicsIndex = 0;
 let cloudOffset = 0;
 let cloudType = [1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2]
@@ -34,38 +29,28 @@ let game_finished = false;
 let characterLostAt = 0;
 let introLoading = false;
 
-// ******************* Game config ****************** \\
-let JUMP_TIME = 300; //in ms 
-let GAME_SPEED = 7;
-let BOSS_POSITION = 5000;
-let AUDIO_RUNNING = new Audio('audio/running.mp3');
-let AUDIO_JUMP = new Audio('audio/jump.mp3');
-let AUDIO_BOTTLE = new Audio('audio/bottle.mp3');
-let AUDIO_THROW = new Audio('audio/throw.mp3');
-let AUDIO_CHICKEN = new Audio('audio/chicken.mp3');
-let AUDIO_GLASS = new Audio('audio/glass.mp3');
-let AUDIO_WIN = new Audio('audio/win.mp3')
-let AUDIO_BGM = new Audio('audio/el_pollo_loco.mp3');
-AUDIO_BGM.loop = true;
-AUDIO_BGM.volume = 0.2;
-
-
 function init() {
+
     loadInitialImage();
     preloadImages(imagePathsJump, imagesJump);
     preloadImages(imagePathsIdle, imagesIdle);
     preloadImages(imagePathsWalk, imagesWalk);
+    preloadImages(imagesPathsBg, imagesBg);
+    preloadImages(imagesPathClouds, imagesCloud);
+    preloadImages(imagesPathHit, imagesHit);
     canvas = document.getElementById('canvas');
     ctx = canvas.getContext('2d');
+    calculateCloudOffset();
+    draw();
+}
+
+function startGame() {
+    document.getElementById('startScreen').classList.add("d-none");
     createChickenList();
     checkForRunning();
-    draw();
-    calculateCloudOffset();
     listenForKeys();
     calculateChickenPosition();
     checkForCollision();
-
-
 }
 
 function loadInitialImage() {
@@ -91,12 +76,18 @@ function checkForCollision() {
             let chicken_x = chicken.position_x + bg_elements;
             if ((chicken_x - 35) < character_x && (chicken_x + 35) > character_x) {
                 if (character_y > 150 && character_energy != 0) {
+                    isColiding = true;
+
                     character_energy -= 1;
+                    setTimeout(() => {
+                        isColiding = false;
+                    }, 100);
                 }
 
                 if (character_energy == 0) {
                     characterLostAt = new Date().getTime();
                     game_finished = true;
+                    AUDIO_OVER.play();
                 }
 
 
@@ -125,7 +116,7 @@ function checkForCollision() {
             }
 
         }
-    }, 200);
+    }, 400);
 }
 
 function finishLevel() {
@@ -143,6 +134,7 @@ function calculateChickenPosition() {
             let chicken = chickens[i];
             chicken.position_x = chicken.position_x - chicken.speed;
         }
+
     }, 200);
 
 
@@ -173,25 +165,32 @@ function calculateCloudOffset() {
 function checkForRunning() {
 
     setInterval(function () {
-        if (isMovingRight) {
+        if (isMovingRight && !game_finished && !isColiding) {
             AUDIO_RUNNING.play();
             let index = characterGraphicsIndex % imagesWalk.length;
             currentCharacterImage = imagesWalk[index];
             characterGraphicsIndex++;
         }
 
-        if (isMovingLeft) {
+        if (isMovingLeft && !game_finished && !isColiding) {
             AUDIO_RUNNING.play();
             let index = characterGraphicsIndex % imagesWalk.length;
             currentCharacterImage = imagesWalk[index];
             characterGraphicsIndex++;
         }
 
-        if (!isMovingLeft && !isMovingRight && !isJumping) {
+        if (!isMovingLeft && !isMovingRight && !isJumping && !isColiding) {
             let index = characterGraphicsIndex % imagesIdle.length;
             currentCharacterImage = imagesIdle[index];
             characterGraphicsIndex++;
             AUDIO_RUNNING.pause();
+        }
+
+        if (isColiding) {
+            let index = characterGraphicsIndex % imagesHit.length;
+            currentCharacterImage = imagesHit[index];
+            characterGraphicsIndex++;
+            AUDIO_HIT.play();
         }
 
     }, 300);
@@ -213,7 +212,6 @@ function draw() {
     if (game_finished) {
         drawfinalScreen();
     } else {
-
         updateCharacter();
         drawChicken();
         drawBottles();
@@ -389,7 +387,8 @@ function drawBackground() {
 
     for (let i = 0; i < cloudType.length; i++) {
         num = cloudType[i];
-        addBackgroundObject('img/cloud' + num + '.png', (i * canvas.width) - cloudOffset, 20, 0.4, 1, bg_elements3);
+        addBackgroundObject(imagesCloud[num - 1], (i * canvas.width) - cloudOffset, 20, 0.4, 1, bg_elements3);
+
     }
 
 }
@@ -409,23 +408,19 @@ function drawGround() {
     }
     for (let i = 0; i < 10; i++) {
 
-        addBackgroundObject('img/bg/2.png', i * canvas.width, 75, 0.375, 1, bg_elements3);
-        addBackgroundObject('img/bg/3.png', (i + 1) * canvas.width, 75, 0.375, 1, bg_elements3);
+        addBackgroundObject(imagesBg[2], i * canvas.width, 75, 0.375, 1, bg_elements3);
+        addBackgroundObject(imagesBg[3], (i + 1) * canvas.width, 75, 0.375, 1, bg_elements3);
 
     }
     for (let i = 0; i < 10; i++) {
-        addBackgroundObject('img/bg/0.png', i * canvas.width, 75, 0.375, 1, bg_elements2);
-        addBackgroundObject('img/bg/1.png', (i + 1) * canvas.width, 75, 0.375, 1, bg_elements2);
+        addBackgroundObject(imagesBg[0], i * canvas.width, 75, 0.375, 1, bg_elements2);
+        addBackgroundObject(imagesBg[1], (i + 1) * canvas.width, 75, 0.375, 1, bg_elements2);
     }
-
-
-
-
 
     //draw Ground
     for (let i = 0; i < 10; i++) {
-        addBackgroundObject('img/bg/4.png', i * canvas.width, 75, 0.375, 1, bg_elements);
-        addBackgroundObject('img/bg/5.png', (i + 1) * canvas.width, 75, 0.375, 1, bg_elements);
+        addBackgroundObject(imagesBg[4], i * canvas.width, 75, 0.375, 1, bg_elements);
+        addBackgroundObject(imagesBg[5], (i + 1) * canvas.width, 75, 0.375, 1, bg_elements);
     }
 }
 
@@ -435,60 +430,18 @@ function addBackgroundObject(src, offsetY, offsetX, scale, opacity, bg_elements)
         ctx.globalAlpha = opacity;
     }
 
-    let base_image = new Image();
-    base_image.src = src;
+    let base_image;
+
+    if (typeof src == "string") {
+        base_image = new Image();
+        base_image.src = src;
+    } else {
+        base_image = src;
+    }
+
     if (base_image.complete) {
         ctx.drawImage(base_image, offsetY + bg_elements, offsetX, base_image.width * scale, base_image.height * scale);
     };
     ctx.globalAlpha = 1;
 }
 
-function listenForKeys() {
-    document.addEventListener("keydown", e => {
-        const k = e.key;
-        if (k == 'ArrowRight') {
-            isMovingRight = true;
-            isLookingRight = true;
-            isLookingLeft = false;
-        }
-        if (k == 'ArrowLeft') {
-            isMovingLeft = true;
-            isLookingRight = false;
-            isLookingLeft = true;
-        }
-
-        if (k == 'd') {
-            let timePassed = new Date().getTime() - bottleThrowTime;
-            if (timePassed > 1000) {
-                AUDIO_THROW.play();
-                colectedBottles--;
-                bottleThrowTime = new Date().getTime();
-            }
-
-        }
-
-        let timePassedSinceJump = new Date().getTime() - lastJumpStarted;
-        if (k == ' ' && timePassedSinceJump > JUMP_TIME * 2) {
-            isJumping = true;
-            AUDIO_JUMP.play();
-            lastJumpStarted = new Date().getTime();
-            setTimeout(function () {
-                isJumping = false;
-            }, 600);
-
-        }
-
-
-    });
-    document.addEventListener("keyup", e => {
-        const k = e.key;
-        if (k == 'ArrowRight') {
-            isMovingRight = false;
-        }
-        if (k == 'ArrowLeft') {
-            isMovingLeft = false;
-        }
-
-
-    });
-}

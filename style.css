@@ -1,4 +1,46 @@
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css");
+
 body {
-    font-family: 'Comic Sans MS', Arial, Helvetica, sans-serif;
+    position: relative;
+    width: 720px;
+    height: 480px;
+    font-family: 'Comic Sans MS', Arial, Helvetica, sans-serif !important;
     background-color: #cccccc;
+}
+
+.controls {
+    position: absolute;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 720px;
+    height: 480px;
+}
+
+.btn-controls {
+    width: inherit;
+    height: inherit;
+    display: flex;
+    justify-content: space-between;
+    position: absolute;
+    left: 32px;
+    right: 32px;
+    bottom: 32px;
+    padding-bottom: 32px;
+}
+
+.btn-controls i{
+    font-size: 3rem;
+    padding: 16px;
+}
+
+.leftRight {
+    width: 180px;
+
 }
