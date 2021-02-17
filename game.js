@@ -20,14 +20,14 @@ let cloudOffset = 0;
 let cloudType = [1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2]
 let chickens = [];
 let placedBottles = [1000, 1400, 1700, 2300, 2500, 2900, 3300, 3900];
-let colectedBottles = 10;
+let colectedBottles = 0;
 let bottleThrowTime = 0;
 let trownBottleX = 0;
 let trownBottleY = 0;
 let bossDefeatedAt = 0;
 let game_finished = false;
+let game_started = false;
 let characterLostAt = 0;
-let introLoading = false;
 
 function init() {
 
@@ -44,7 +44,9 @@ function init() {
     draw();
 }
 
+
 function startGame() {
+    game_started = true;
     document.getElementById('startScreen').classList.add("d-none");
     createChickenList();
     checkForRunning();
@@ -68,6 +70,7 @@ function preloadImages(path, newArray) {
     }
 }
 
+
 function checkForCollision() {
     setInterval(function () {
         //Check chicken
@@ -81,7 +84,7 @@ function checkForCollision() {
                     character_energy -= 1;
                     setTimeout(() => {
                         isColiding = false;
-                    }, 100);
+                    }, 200);
                 }
 
                 if (character_energy == 0) {
@@ -116,7 +119,7 @@ function checkForCollision() {
             }
 
         }
-    }, 400);
+    }, 250);
 }
 
 function finishLevel() {
@@ -193,7 +196,7 @@ function checkForRunning() {
             AUDIO_HIT.play();
         }
 
-    }, 300);
+    }, 100);
     setInterval(() => {
         if (isJumping) {
             let index = characterGraphicsIndex % imagesJump.length;
@@ -201,7 +204,7 @@ function checkForRunning() {
             characterGraphicsIndex++;
         }
 
-    }, 60);
+    }, 100);
 
 }
 
@@ -226,14 +229,21 @@ function draw() {
 
 function drawfinalScreen() {
     ctx.fillStyle = "orange";
-    ctx.font = '80px Comic Sans MS';
-    let msg = 'You Won!'
+    ctx.font = '30px Comic Sans MS';
+    let msg = `You Won!  Press Enter to reload game`
     if (characterLostAt > 0) {
-        msg = 'You Lost!'
+        msg = `You Lost!  Press Enter to reload game`
     }
     ctx.textAlign = "center";
     ctx.fillText(msg, canvas.width / 2, canvas.height / 2);
 
+
+    document.addEventListener("keydown", e => {
+        const k = e.key;
+        if (k == "Enter") {
+            window.location.reload();
+        }
+    });
 }
 
 
@@ -269,14 +279,19 @@ function drawFinalBoss() {
 function drawThrowBottle() {
     if (bottleThrowTime) {
         let timePassed = new Date().getTime() - bottleThrowTime;
-        let gravity = Math.pow(9.81, timePassed / 289)
-        trownBottleX = 220 + (timePassed * 0.9);
-        trownBottleY = 300 - (timePassed * 0.4 - gravity);
+        let gravity = Math.pow(9.81, timePassed / 289);
+        trownBottleX = 200 + (timePassed * 0.7);
+        trownBottleY = 250 - (timePassed * 0.4 - gravity);
 
         let base_image = new Image();
         base_image.src = 'img/tabasco.png';
+
+
         if (base_image.complete) {
+
             ctx.drawImage(base_image, trownBottleX, trownBottleY, base_image.width * 0.5, base_image.height * 0.5);
+
+
         };
     }
 

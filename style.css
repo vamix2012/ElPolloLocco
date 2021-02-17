@@ -8,12 +8,13 @@ body {
     background-color: #cccccc;
 }
 
-.controls {
+
+.welcomeScreen {
     position: absolute;
-    padding: 8px;
+    padding-top: 80px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: last baseline;
     align-items: center;
     top: 0;
     left: 0;
@@ -31,16 +32,45 @@ body {
     position: absolute;
     left: 32px;
     right: 32px;
-    bottom: 32px;
+    bottom: 8px;
     padding-bottom: 32px;
 }
 
 .btn-controls i{
     font-size: 3rem;
-    padding: 16px;
+    padding: 32px;
+    color: darkslategray;
 }
 
 .leftRight {
-    width: 180px;
+    width: 250px;
+}
 
+.jumpTrow {
+    width: 250px;
+}
+
+
+.helpersTogglers {
+    position: absolute;
+    right: 32px;
+    top: 32px;
+    width: 200px;
+    display: flex;
+    justify-content: space-around;
+}
+
+.helpersTogglers i {
+font-size: 32px;
+}
+
+.helpScreen {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    bottom: 200px;
+    left: 0;
+    right: 0;
+    color: indigo;
 }
