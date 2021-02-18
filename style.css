@@ -10,7 +10,6 @@ body {
 
 .btn-controls {
     width: inherit;
-    height: inherit;
     display: flex;
     justify-content: space-between;
     position: absolute;
@@ -22,29 +21,26 @@ body {
 
 .btn-controls i{
     font-size: 3rem;
-    padding: 32px;
+    margin-left: 48px;
+    margin-right: 48px;
     color: darkslategray;
 }
 
 .leftRight {
-    width: 250px;
+    width: 300px;
 }
 
 .jumpTrow {
-    width: 250px;
+    width: 300px;
 }
-
-
-
-
-
 
 .helpScreen {
     position: absolute;
     display: flex;
     flex-direction: column;
     align-items: center;
-    bottom: 200px;
+    margin-bottom: 200px;
+    bottom: 0;
     left: 0;
     right: 0;
     color: indigo;

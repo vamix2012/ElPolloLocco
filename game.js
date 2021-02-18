@@ -35,7 +35,7 @@ let characterLostAt = 0;
 
 
 function init() {
-
+    playIntro();
     loadInitialImage();
     preloadImages(imagePathsJump, imagesJump);
     preloadImages(imagePathsIdle, imagesIdle);
@@ -50,6 +50,10 @@ function init() {
     scaleScreen();
     calculateCloudOffset();
     draw();
+}
+
+function playIntro() {
+    AUDIO_START.play();
 }
 
 function setScreenSize() {
@@ -72,10 +76,8 @@ function scaleScreen() {
     window.addEventListener('resize', setScreenSize);
 }
 
-
-
-
 function startGame() {
+    AUDIO_BGM.play();
     game_started = true;
     document.getElementById('startScreen').classList.add("d-none");
     createChickenList();
@@ -121,6 +123,11 @@ function checkForCollision() {
                     characterLostAt = new Date().getTime();
                     game_finished = true;
                     AUDIO_OVER.play();
+                    setTimeout(() => {
+                        AUDIO_BGM.pause();
+                        window.location.reload();
+                    }, 10000);
+
                 }
 
 
@@ -157,6 +164,10 @@ function finishLevel() {
     setTimeout(function () {
         AUDIO_WIN.play();
     }, 500);
+    setTimeout(() => {
+        AUDIO_BGM.pause();
+        window.location.reload();
+    }, 10000);
     game_finished = true;
 
 }
@@ -240,7 +251,6 @@ function checkForRunning() {
 
 function draw() {
 
-
     drawBackground();
     if (game_finished) {
         drawfinalScreen();
@@ -260,12 +270,12 @@ function draw() {
 function drawfinalScreen() {
     ctx.fillStyle = "orange";
     ctx.font = '30px Comic Sans MS';
-    let msg = `You Won!  Press Enter to reload game`
+    let msg = `You Won!  Press Enter to reload game`;
     if (characterLostAt > 0) {
         msg = `You Lost!  Press Enter to reload game`
     }
     ctx.textAlign = "center";
-    ctx.fillText(msg, canvas.width / 2, canvas.height / 2);
+    ctx.fillText(msg, canvas.width / 2, (canvas.height / 2) - 80);
 
 
     document.addEventListener("keydown", e => {
@@ -310,7 +320,7 @@ function drawThrowBottle() {
     if (bottleThrowTime) {
         let timePassed = new Date().getTime() - bottleThrowTime;
         let gravity = Math.pow(9.81, timePassed / 289);
-        trownBottleX = 200 + (timePassed * 0.7);
+        trownBottleX = 250 + (timePassed * 0.7);
         trownBottleY = 250 - (timePassed * 0.4 - gravity);
 
         let base_image = new Image();
@@ -371,6 +381,7 @@ function drawChicken() {
 
 function createChicken(type, position_x) {
     let position_y = 345;
+    let randomNum = Math.floor(Math.random() * (13 - 3 + 1)) + 3;
     if (type == 2) {
         position_y = 363;
     } if (type == 1) {
@@ -381,7 +392,7 @@ function createChicken(type, position_x) {
         "position_x": position_x,
         "position_y": position_y,
         "scale": 0.3,
-        "speed": (Math.random() * 5)
+        "speed": randomNum
     };
 }
 

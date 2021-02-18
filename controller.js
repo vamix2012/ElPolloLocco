@@ -13,11 +13,7 @@ function listenForKeys() {
             isLookingLeft = true;
         }
 
-        if (k == 'f') {
-            fullscreen();
-        }
-
-        if (k == 'd' && !game_finished) {
+        if (k == 'd' && !game_finished && colectedBottles != 0) {
             let timePassed = new Date().getTime() - bottleThrowTime;
             if (timePassed > 1000) {
                 AUDIO_THROW.play();
@@ -35,7 +31,10 @@ function listenForKeys() {
             setTimeout(function () {
                 isJumping = false;
             }, 600);
-
+        }
+        if (k == "m") {
+            if (!AUDIO_BGM.paused && !game_finished) AUDIO_BGM.pause();
+            else if (AUDIO_BGM.paused && !game_finished) AUDIO_BGM.play();
         }
 
 
@@ -89,7 +88,7 @@ function listenForKeys() {
     document.getElementById("bottleTrow").addEventListener("touchstart", function (e) {
         if (!game_finished) {
             let timePassed = new Date().getTime() - bottleThrowTime;
-            if (timePassed > 1000) {
+            if (timePassed > 1000 && colectedBottles != 0) {
                 AUDIO_THROW.play();
                 colectedBottles--;
                 bottleThrowTime = new Date().getTime();
