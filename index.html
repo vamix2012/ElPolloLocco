@@ -13,17 +13,8 @@
     <meta charset='utf-8'>
 </head>
 
-<body onload="init()">
+<body id="mainFrame" onload="init()">
     <div class="mainContainer">
-        <div class="welcomeScreen" id="startScreen">
-
-            <h1>Welcome to <br> El Poll Locco</h1>
-            <br>
-            <br>
-            <button type="button" class="btn btn-outline-success" onclick="startGame()">Start Game</button>
-
-        </div>
-
         <div class="btn-controls d-none" id="touchControls">
 
             <div class="leftRight">
@@ -35,18 +26,12 @@
                 <i class="bi bi-arrow-up-right-square-fill" id="bottleTrow"></i>
             </div>
         </div>
-
-        <div class="helpersTogglers">
-            <i class="bi bi-hand-index-thumb-fill" onclick="toggleTouch()"></i>
-            <i class="bi bi-question-circle-fill" onclick="openHelp()"></i>
-        </div>
-        <div class="helpScreen d-none" id="helpSection">
+        <div class="helpScreen" id="startScreen">
+            <h1>Welcome to El Pollo Locco</h1>
             <h3>Arrows Left/Right - Move</h3>
             <h3>Spacebar - Jump</h3>
             <h3>D - Trow Bottle</h3>
-            <h3><i class="bi bi-question-circle-fill"> - Toggle Help</i></h3>
-            <h3><i class="bi bi-hand-index-thumb-fill"></i> - Toggle Touch Controls</h3>
-            <button class="btn btn-outline-danger" onclick="closeHelp()">Close</button>
+            <button class="btn btn-outline-success" onclick="startGame()">Start Game</button>
         </div>
     </div>
 
@@ -57,7 +42,7 @@
 
 
 
-    <canvas id="canvas" width="720" height="480"> </canvas>
+    <canvas id="canvas"> </canvas>
 
 </body>
 

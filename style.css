@@ -8,22 +8,6 @@ body {
     background-color: #cccccc;
 }
 
-
-.welcomeScreen {
-    position: absolute;
-    padding-top: 80px;
-    display: flex;
-    flex-direction: column;
-    justify-content: last baseline;
-    align-items: center;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 720px;
-    height: 480px;
-}
-
 .btn-controls {
     width: inherit;
     height: inherit;
@@ -32,8 +16,8 @@ body {
     position: absolute;
     left: 32px;
     right: 32px;
-    bottom: 8px;
-    padding-bottom: 32px;
+    bottom: 0;
+    
 }
 
 .btn-controls i{
@@ -51,18 +35,9 @@ body {
 }
 
 
-.helpersTogglers {
-    position: absolute;
-    right: 32px;
-    top: 32px;
-    width: 200px;
-    display: flex;
-    justify-content: space-around;
-}
 
-.helpersTogglers i {
-font-size: 32px;
-}
+
+
 
 .helpScreen {
     position: absolute;

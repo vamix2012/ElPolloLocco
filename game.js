@@ -1,6 +1,9 @@
 let canvas;
 let ctx;
-let character_x = 150;
+let scale = 0.375;
+let xOffset = 75;
+let character_x = 280;
+let character_y = 190;
 let isMovingRight = false;
 let isMovingLeft = false;
 let isLookingRight = true;
@@ -13,7 +16,6 @@ let bg_elements3 = 0;
 let lastJumpStarted = 0;
 let character_energy = 10;
 let finalBossEnergy = 100;
-let character_y = 190;
 let currentCharacterImage = '';
 let characterGraphicsIndex = 0;
 let cloudOffset = 0;
@@ -29,6 +31,9 @@ let game_finished = false;
 let game_started = false;
 let characterLostAt = 0;
 
+
+
+
 function init() {
 
     loadInitialImage();
@@ -40,9 +45,34 @@ function init() {
     preloadImages(imagesPathHit, imagesHit);
     canvas = document.getElementById('canvas');
     ctx = canvas.getContext('2d');
+    canvas.width = 720;
+    setScreenSize();
+    scaleScreen();
     calculateCloudOffset();
     draw();
 }
+
+function setScreenSize() {
+    if (window.innerWidth < 1080) {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        document.body.style.width = window.innerWidth;
+        scale = window.innerWidth / 1920;
+        xOffset = ((window.innerWidth / 9.6) - 75) - 75;
+        document.getElementById('touchControls').classList.remove('d-none');
+    } else if (window.innerWidth > 1080) {
+        canvas.width = 720;
+        canvas.height = 480;
+        document.body.style.width = '720px';
+        document.getElementById('touchControls').classList.add('d-none');
+    }
+}
+
+function scaleScreen() {
+    window.addEventListener('resize', setScreenSize);
+}
+
+
 
 
 function startGame() {
@@ -423,19 +453,19 @@ function drawGround() {
     }
     for (let i = 0; i < 10; i++) {
 
-        addBackgroundObject(imagesBg[2], i * canvas.width, 75, 0.375, 1, bg_elements3);
-        addBackgroundObject(imagesBg[3], (i + 1) * canvas.width, 75, 0.375, 1, bg_elements3);
+        addBackgroundObject(imagesBg[2], i * canvas.width, xOffset, scale, 1, bg_elements3);
+        addBackgroundObject(imagesBg[3], (i + 1) * canvas.width, xOffset, scale, 1, bg_elements3);
 
     }
     for (let i = 0; i < 10; i++) {
-        addBackgroundObject(imagesBg[0], i * canvas.width, 75, 0.375, 1, bg_elements2);
-        addBackgroundObject(imagesBg[1], (i + 1) * canvas.width, 75, 0.375, 1, bg_elements2);
+        addBackgroundObject(imagesBg[0], i * canvas.width, xOffset, scale, 1, bg_elements2);
+        addBackgroundObject(imagesBg[1], (i + 1) * canvas.width, xOffset, scale, 1, bg_elements2);
     }
 
     //draw Ground
     for (let i = 0; i < 10; i++) {
-        addBackgroundObject(imagesBg[4], i * canvas.width, 75, 0.375, 1, bg_elements);
-        addBackgroundObject(imagesBg[5], (i + 1) * canvas.width, 75, 0.375, 1, bg_elements);
+        addBackgroundObject(imagesBg[4], i * canvas.width, xOffset, scale, 1, bg_elements);
+        addBackgroundObject(imagesBg[5], (i + 1) * canvas.width, xOffset, scale, 1, bg_elements);
     }
 }
 

@@ -99,26 +99,6 @@ function listenForKeys() {
     });
 }
 
-function toggleTouch() {
-    document.getElementById('touchControls').classList.toggle('d-none');
-}
 
-function openHelp() {
-    if (!game_started) {
-        document.getElementById('helpSection').classList.remove('d-none');
-        document.getElementById('startScreen').classList.add('d-none')
-    } else {
-        document.getElementById('helpSection').classList.toggle('d-none');
-    }
-}
-function closeHelp() {
-    if (!game_started) {
-        document.getElementById('helpSection').classList.add('d-none');
-        document.getElementById('startScreen').classList.remove('d-none');
-    } else {
-        document.getElementById('helpSection').classList.toggle('d-none');
-    }
-
-}
 
 
